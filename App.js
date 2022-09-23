@@ -19,6 +19,7 @@
    NativeModules,
    TouchableOpacity,
    Clipboard,
+   Linking,
  } from 'react-native';
  
  import {   
@@ -41,12 +42,18 @@
      console.error('hi i was called')
    }
    const _onMessage = (event) => {
-     console.error(" message start", event);
+
      // const data = JSON.parse(event.nativeEvent.data);
      if (event.nativeEvent.data.startsWith('Paste')) {
        Clipboard.setString(event.nativeEvent.data);
        NativeModules.FancyMath.add(1,2);
      }
+     else if (event.nativeEvent.data.startsWith('createNewNoteFromPrev')) {
+      executeScript();
+   }
+   else if (event.nativeEvent.data.startsWith('openUpsellExtension')) {
+    Linking.openURL('https://chrome.google.com/webstore/detail/onenote-web-clipper/gojbdfnpnhogfdgjbigejoaolejmgdhk?hl=en')
+   }
    }
  
    const sendDataToWebView = () => {
@@ -54,28 +61,48 @@
      window.alert('fffff');
  
    }
+
+   const addPreview = () => {
+    webviewRef.current.injectJavaScript(`
+     var link = "http://www.quirksmode.org/iframetest2.html"
+     var iframe = document.createElement('iframe');
+iframe.frameBorder=0;
+iframe.height="250px";
+iframe.width="480px";
+iframe.id="randomid";
+iframe.setAttribute("srcdoc", '<style>body {font-family: "Segoe UI";} img {  max-height: "200px"; display: "block";max-width: 30%;} </style><html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>');
+document.getElementById("add54").prepend(iframe);
+document.getElementById("noteTitle").innerText = "Medium.com";`)
+   }
  
    const executeScript = async () => {
-     let data = await Clipboard.getString();
-     data = '<html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>';
+    //  let data = await Clipboard.getString();
+     let contextData = "{}"
+     const data = '<html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>';
      webviewRef.current &&
        webviewRef.current.injectJavaScript(
          `window.CreateNewNoteExtend("Gray",${JSON.stringify(data)});`
        );
+       alert('pppp');
    }
  
    const webviewRef = useRef();
  
    return (
      <SafeAreaView style={styles.containerStyle}>
-       <Text style={{fontSize: 15, color: 'white', marginBottom: 10, marginTop: 10}}>
+       {/* <Text style={{fontSize: 15, color: 'white', marginBottom: 10, marginTop: 10}}>
              Here's something we captured, save it?
-           </Text>
-       <WebView
-       style={{flex: 1, maxHeight: 300, marginLeft: 25, marginRight: 25, borderRadius: 20, borderWidth: 1}}
-         source={{html: '<style>body {font-family: "Segoe UI";} img { display: block; max-width: 100%; height: 200; } </style><html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>'}} 
-       />
-       <TouchableOpacity
+           </Text> */}
+       {/* <WebView
+       ref={webViewRefPreview}
+       style={showIt ? {flex: 1, maxHeight: 300, marginLeft: 25, marginRight: 25, borderRadius: 20, borderWidth: 1} : {display: 'none'}}
+       useWebKit={true}
+         // keyboardDisplayRequiresUserAction={true}
+         originWhitelist={["*"]}
+         useWebView2={true}
+         source={{html: '<style>body {font-family: "Segoe UI";} img { display: block; max-width: 100%; max-height: 200; } </style><html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>'}} 
+       /> */}
+       {/* <TouchableOpacity
            onPress={executeScript}
            style={{
              alignItems: 'center'
@@ -83,19 +110,21 @@
            <Text style={{fontSize: 20, color: 'white', backgroundColor: '#7719aa'}}>
              Save Note
            </Text>
-         </TouchableOpacity>
+         </TouchableOpacity> */}
        <WebView
        ref={webviewRef}
        style={{flex: 1}}
          source={{
-           uri: "https://www.onenote.com/stickynotesstaging?localDevOverride=https%3A%2F%2F1bc4-2404-f801-8028-1-3c20-9932-a3d1-656f.ngrok.io%2F",
+           uri: "https://www.onenote.com/stickynotesstaging?localDevOverride=https%3A%2F%2F3ba3-2404-f801-8028-3-ad2f-b9f5-85e9-a2df.ngrok.io%2F",
          }}
          onMessage={_onMessage}
          useWebKit={true}
          // keyboardDisplayRequiresUserAction={true}
          originWhitelist={["*"]}
          useWebView2={true}
-         onLoad={()=>{console.error('WebViewLoaded', Date.now())}}
+         onLoad={()=>{setTimeout(function(){
+          addPreview();
+        }, 1000);}}
        />
      </SafeAreaView>
    );
