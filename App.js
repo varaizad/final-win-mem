@@ -77,13 +77,13 @@ document.getElementById("noteTitle").innerText = "Medium.com";`)
  
    const executeScript = async () => {
     //  let data = await Clipboard.getString();
-     let contextData = "{}"
+    //  let contextData = "{\n  title: \"Wikipedia of Mango\",\n  iconSrc: \"https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg\",\n  pageUrl: \"https://www.wikipedia.com\",\n  firstImgSrc: \"https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg\",\n  description: \"Botanically, mango is a drupe, consisting of an outer skin, a fleshy edible portion, and a central stone enclosing a single seed also called stone fruit, like a plum, cherry, or peach.\"\n}"
+    //  contextData = JSON.parse(contextData)
      const data = '<html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>';
      webviewRef.current &&
        webviewRef.current.injectJavaScript(
          `window.CreateNewNoteExtend("Gray",${JSON.stringify(data)});`
        );
-       alert('pppp');
    }
  
    const webviewRef = useRef();
