@@ -77,14 +77,20 @@ document.getElementById("noteTitle").innerText = "Medium.com";`)
  
    const executeScript = async () => {
     //  let data = await Clipboard.getString();
-    //  let contextData = "{\n  title: \"Wikipedia of Mango\",\n  iconSrc: \"https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg\",\n  pageUrl: \"https://www.wikipedia.com\",\n  firstImgSrc: \"https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg\",\n  description: \"Botanically, mango is a drupe, consisting of an outer skin, a fleshy edible portion, and a central stone enclosing a single seed also called stone fruit, like a plum, cherry, or peach.\"\n}"
-    //  contextData = JSON.parse(contextData)
-     const data = '<html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>';
+    let contextData1 = '{"title": "Wikipedia of Mango","iconSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","pageUrl": "https://www.wikipedia.com","firstImgSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg"}'
+    let contextData = '{"title": "Wikipedia of Mango","iconSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","pageUrl": "https://www.wikipedia.com","firstImgSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","description": "Botanically, mango is a drupe, consisting of an outer skin, a fleshy edible portion, and a central stone enclosing a single seed also called stone fruit, like a plum, cherry, or peach."}'
+     let contextDataParsed = JSON.parse(contextData)
+     const data = `<html><img src=${contextDataParsed.firstImgSrc} /><p>${contextDataParsed.description}</p><p>Some other gibberish stuff.</p></html>`
      webviewRef.current &&
        webviewRef.current.injectJavaScript(
-         `window.CreateNewNoteExtend("Gray",${JSON.stringify(data)});`
+         `window.CreateNewNoteExtend("Gray",${JSON.stringify(data)}, ${contextData1});`
        );
    }
+
+  //  const runServer = () => {
+  //   NativeModules.FancyMath.runServer();
+  //   window.alert('aaa');
+  //  }
  
    const webviewRef = useRef();
  
@@ -103,7 +109,7 @@ document.getElementById("noteTitle").innerText = "Medium.com";`)
          source={{html: '<style>body {font-family: "Segoe UI";} img { display: block; max-width: 100%; max-height: 200; } </style><html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>'}} 
        /> */}
        {/* <TouchableOpacity
-           onPress={executeScript}
+           onPress={runServer}
            style={{
              alignItems: 'center'
            }}>

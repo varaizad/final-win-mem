@@ -48,5 +48,7 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <rescap:Capability Name="inputInjectionBrokered" />
+    <Capability Name="privateNetworkClientServer" />
+    <Capability Name="internetClientServer"/>
   </Capabilities>
 </Package>
