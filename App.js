@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
- import React, {useRef} from 'react';
+ import React, {useRef, useEffect} from 'react';
  import type {Node} from 'react';
  import {
    SafeAreaView,   
@@ -35,6 +35,21 @@
  const App: () => Node = () => {
    // const webviewRef = useRef();
    const isDarkMode = useColorScheme() === 'dark';
+   useEffect(() => {
+    async function launchProcess() {
+      setTimeout(async function(){
+        await NativeModules.ReactNativeAppServiceModule.launchFullTrustProcess();
+        setTimeout(async function(){
+          while (1) {
+            var result = await NativeModules.ReactNativeAppServiceModule.getRegistryKey();
+            createNoteOnPostMessage(result)
+            console.error(result);
+          }
+        }, 5000);
+      }, 10000);
+    }
+    launchProcess();
+  }, []);
  
    const _onPressHandler = async () => {
      // Calling FancyMath.add method
@@ -87,6 +102,17 @@ document.getElementById("noteTitle").innerText = "Medium.com";`)
        );
    }
 
+   const createNoteOnPostMessage = async (text) => {
+    //  let data = await Clipboard.getString();
+    let contextData1 = '{"title": "Wikipedia of Mango","iconSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","pageUrl": "https://www.wikipedia.com","firstImgSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg"}'
+    let contextData = '{"title": "Wikipedia of Mango","iconSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","pageUrl": "https://www.wikipedia.com","firstImgSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","description": "Botanically, mango is a drupe, consisting of an outer skin, a fleshy edible portion, and a central stone enclosing a single seed also called stone fruit, like a plum, cherry, or peach."}'
+     let contextDataParsed = JSON.parse(contextData)
+     const data = `<html><img src=${contextDataParsed.firstImgSrc} /><p>${text}</p><p>Some other gibberish stuff.</p></html>`
+     webviewRef.current &&
+       webviewRef.current.injectJavaScript(
+         `window.CreateNewNoteExtend("Gray",${JSON.stringify(data)}, ${contextData1});`
+       );
+   }
   //  const runServer = () => {
   //   NativeModules.FancyMath.runServer();
   //   window.alert('aaa');
