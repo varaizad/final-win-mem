@@ -80,11 +80,12 @@ namespace win32nativeapp
                 HttpListenerContext context = _httpListener.GetContext();
                 HttpListenerRequest request = context.Request;
                 Console.WriteLine(request);
-                string text = "dd";
+                string text = "";
                 using (var reader = new StreamReader(request.InputStream,
                                      request.ContentEncoding))
                 {
-                    text = text + reader.ReadToEnd();
+                    text = reader.ReadToEnd();
+                    Console.WriteLine(text);
                 }
                 HttpListenerResponse response = context.Response;
                 // Construct a response.

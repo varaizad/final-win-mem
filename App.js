@@ -41,9 +41,19 @@
         await NativeModules.ReactNativeAppServiceModule.launchFullTrustProcess();
         setTimeout(async function(){
           while (1) {
-            var result = await NativeModules.ReactNativeAppServiceModule.getRegistryKey();
-            createNoteOnPostMessage(result)
-            console.error(result);
+            try {
+              var result = await NativeModules.ReactNativeAppServiceModule.getRegistryKey();
+            const data = JSON.parse(result);
+            if (data.action == "CREATE_NOTE") {
+              createNoteOnPostMessage(data)
+            }
+            
+            // console.error(result);
+            } catch (e)
+            {
+
+            }
+            
           }
         }, 5000);
       }, 10000);
@@ -51,11 +61,6 @@
     launchProcess();
   }, []);
  
-   const _onPressHandler = async () => {
-     // Calling FancyMath.add method
-     await NativeModules.FancyMath.add(1,2);
-     console.error('hi i was called')
-   }
    const _onMessage = (event) => {
 
      // const data = JSON.parse(event.nativeEvent.data);
@@ -70,24 +75,19 @@
     Linking.openURL('https://chrome.google.com/webstore/detail/onenote-web-clipper/gojbdfnpnhogfdgjbigejoaolejmgdhk?hl=en')
    }
    }
- 
-   const sendDataToWebView = () => {
-     webviewRef.current.postMessage('Data from React Native App');
-     window.alert('fffff');
- 
-   }
+
 
    const addPreview = () => {
-    webviewRef.current.injectJavaScript(`
-     var link = "http://www.quirksmode.org/iframetest2.html"
-     var iframe = document.createElement('iframe');
-iframe.frameBorder=0;
-iframe.height="250px";
-iframe.width="480px";
-iframe.id="randomid";
-iframe.setAttribute("srcdoc", '<style>body {font-family: "Segoe UI";} img {  max-height: "200px"; display: "block";max-width: 30%;} </style><html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>');
-document.getElementById("add54").prepend(iframe);
-document.getElementById("noteTitle").innerText = "Medium.com";`)
+//     webviewRef.current.injectJavaScript(`
+//      var link = "http://www.quirksmode.org/iframetest2.html"
+//      var iframe = document.createElement('iframe');
+// iframe.frameBorder=0;
+// iframe.height="250px";
+// iframe.width="480px";
+// iframe.id="randomid";
+// iframe.setAttribute("srcdoc", '<style>body {font-family: "Segoe UI";} img {  max-height: "200px"; display: "block";max-width: 30%;} </style><html><img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg" /><p>Medium is an open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic.</p><p>Some other gibberish stuff.</p></html>');
+// document.getElementById("add54").prepend(iframe);
+// document.getElementById("noteTitle").innerText = "Medium.com";`)
    }
  
    const executeScript = async () => {
@@ -102,15 +102,16 @@ document.getElementById("noteTitle").innerText = "Medium.com";`)
        );
    }
 
-   const createNoteOnPostMessage = async (text) => {
+   const createNoteOnPostMessage = async (data) => {
     //  let data = await Clipboard.getString();
     let contextData1 = '{"title": "Wikipedia of Mango","iconSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","pageUrl": "https://www.wikipedia.com","firstImgSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg"}'
     let contextData = '{"title": "Wikipedia of Mango","iconSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","pageUrl": "https://www.wikipedia.com","firstImgSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","description": "Botanically, mango is a drupe, consisting of an outer skin, a fleshy edible portion, and a central stone enclosing a single seed also called stone fruit, like a plum, cherry, or peach."}'
      let contextDataParsed = JSON.parse(contextData)
-     const data = `<html><img src=${contextDataParsed.firstImgSrc} /><p>${text}</p><p>Some other gibberish stuff.</p></html>`
+    //  const data = `<html><img src=${contextDataParsed.firstImgSrc} /><p>${text}</p><p>Some other gibberish stuff.</p></html>`
+    const html = `<html><p>${data.noteText?? ''}</p><p>Some other gibberish stuff.</p></html>`
      webviewRef.current &&
        webviewRef.current.injectJavaScript(
-         `window.CreateNewNoteExtend("Gray",${JSON.stringify(data)}, ${contextData1});`
+         `window.CreateNewNoteExtend("Gray",${JSON.stringify(html)}, ${JSON.stringify(data.context??'')});`
        );
    }
   //  const runServer = () => {
@@ -154,9 +155,9 @@ document.getElementById("noteTitle").innerText = "Medium.com";`)
          // keyboardDisplayRequiresUserAction={true}
          originWhitelist={["*"]}
          useWebView2={true}
-         onLoad={()=>{setTimeout(function(){
-          addPreview();
-        }, 1000);}}
+        //  onLoad={()=>{setTimeout(function(){
+        //   addPreview();
+        // }, 1000);}}
        />
      </SafeAreaView>
    );
