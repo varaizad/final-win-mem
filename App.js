@@ -103,12 +103,24 @@
    }
 
    const createNoteOnPostMessage = async (data) => {
+    let imgTags = ' '
+    if (data.imagesSrc){
+      // console.error('ddddd')
+      if (data.imagesSrc.length)
+      {
+        // console.error('eee')
+        for (var i=0; i<data.imagesSrc.length;i++) {
+          imgTags = imgTags + `<img src="${data.imagesSrc[i]}" >`
+        }
+      }
+    }
     //  let data = await Clipboard.getString();
     let contextData1 = '{"title": "Wikipedia of Mango","iconSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","pageUrl": "https://www.wikipedia.com","firstImgSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg"}'
     let contextData = '{"title": "Wikipedia of Mango","iconSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","pageUrl": "https://www.wikipedia.com","firstImgSrc": "https://upload.wikimedia.org/wikipedia/commons/9/90/Hapus_Mango.jpg","description": "Botanically, mango is a drupe, consisting of an outer skin, a fleshy edible portion, and a central stone enclosing a single seed also called stone fruit, like a plum, cherry, or peach."}'
      let contextDataParsed = JSON.parse(contextData)
     //  const data = `<html><img src=${contextDataParsed.firstImgSrc} /><p>${text}</p><p>Some other gibberish stuff.</p></html>`
-    const html = `<html><p>${data.noteText?? ''}</p><p>Some other gibberish stuff.</p></html>`
+    const html = `<html>${imgTags}<p>${data.noteText?? ''}</p></html>`
+    // console.error(html)
      webviewRef.current &&
        webviewRef.current.injectJavaScript(
          `window.CreateNewNoteExtend("Gray",${JSON.stringify(html)}, ${JSON.stringify(data.context??'')});`

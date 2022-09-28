@@ -1,4 +1,5 @@
 using Microsoft.ReactNative;
+using Windows.Foundation;
 #if USE_WINUI3
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -8,6 +9,7 @@ using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.Background;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.ViewManagement;
 #endif
 
 namespace finalProjWinMem
@@ -34,7 +36,6 @@ namespace finalProjWinMem
 #endif
 
             Microsoft.ReactNative.Managed.AutolinkedNativeModules.RegisterAutolinkedNativeModulePackages(PackageProviders); // Includes any autolinked modules
-
             PackageProviders.Add(new ReactPackageProvider());
 
             InitializeComponent();
@@ -48,6 +49,8 @@ namespace finalProjWinMem
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             base.OnLaunched(e);
+            //ApplicationView.PreferredLaunchViewSize = new Size(120, 1000);
+            //ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
             var frame = (Frame)Window.Current.Content;
             frame.Navigate(typeof(MainPage), e.Arguments);
         }
