@@ -60,6 +60,8 @@
     }
     launchProcess();
   }, []);
+
+  let prevLinkNote = ' '
  
    const _onMessage = (event) => {
 
@@ -73,6 +75,14 @@
    }
    else if (event.nativeEvent.data.startsWith('openUpsellExtension')) {
     Linking.openURL('https://chrome.google.com/webstore/detail/onenote-web-clipper/gojbdfnpnhogfdgjbigejoaolejmgdhk?hl=en')
+   }
+   else if (event.nativeEvent.data.startsWith('openLink')) {
+    const link = event.nativeEvent.data.substring(8)
+    if ( link != prevLinkNote)
+    {
+      Linking.openURL(link)
+      prevLinkNote = link
+    }
    }
    }
 
@@ -160,7 +170,7 @@
        ref={webviewRef}
        style={{flex: 1}}
          source={{
-           uri: "https://www.onenote.com/stickynotesstaging?localDevOverride=https%3A%2F%2F3ba3-2404-f801-8028-3-ad2f-b9f5-85e9-a2df.ngrok.io%2F",
+           uri: "https://www.onenote.com/stickynotesstaging?localDevOverride=https%3A%2F%2Fa640-2404-f801-8028-3-d17d-6167-d8b4-21ab.ngrok.io%2F",
          }}
          onMessage={_onMessage}
          useWebKit={true}
